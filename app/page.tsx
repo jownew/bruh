@@ -18,6 +18,12 @@ export default function Home() {
           >
             🚀 Start Quiz!
           </Link>
+          <Link
+            href='/contact'
+            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+          >
+            💌 Contact Us
+          </Link>
         </div>
         <div className='mt-10 flex justify-center gap-6 text-4xl'>
           <span>📚</span>
