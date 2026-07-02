@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import type { Question } from "../api/questions/route";
+import { useAudio } from "../hooks/useAudio";
 
 const EMOJIS_CORRECT = ["🎉", "⭐", "🌟", "🥳", "🎊", "🦄", "🍭"];
 const EMOJIS_WRONG = ["😅", "💪", "🌈", "🔄", "😊"];
@@ -32,6 +33,7 @@ export default function QuizPage() {
   const [finished, setFinished] = useState(false);
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
   const [feedbackEmoji, setFeedbackEmoji] = useState("");
+  const { playCorrect, playWrong, playClick, playVictory, startBgMusic, stopBgMusic, toggleMute, muted } = useAudio();
 
   useEffect(() => {
     fetch("/api/questions")
@@ -40,6 +42,7 @@ export default function QuizPage() {
   }, []);
 
   const startQuiz = useCallback((set: string) => {
+    startBgMusic();
     fetch(`/api/questions?questionSet=${encodeURIComponent(set)}`)
       .then((r) => r.json())
       .then((d) => {
@@ -52,7 +55,7 @@ export default function QuizPage() {
         setFeedback(null);
         setFinished(false);
       });
-  }, []);
+  }, [startBgMusic]);
 
   const handleAnswer = (opt: string) => {
     if (chosen) return;
@@ -65,11 +68,19 @@ export default function QuizPage() {
         ? EMOJIS_CORRECT[Math.floor(Math.random() * EMOJIS_CORRECT.length)]
         : EMOJIS_WRONG[Math.floor(Math.random() * EMOJIS_WRONG.length)]
     );
-    if (isCorrect) setScore((s) => s + 1);
+    if (isCorrect) {
+      setScore((s) => s + 1);
+      playCorrect();
+    } else {
+      playWrong();
+    }
   };
 
   const next = () => {
+    playClick();
     if (index + 1 >= shuffled.length) {
+      stopBgMusic();
+      playVictory();
       setFinished(true);
     } else {
       setIndex((i) => i + 1);
@@ -79,6 +90,7 @@ export default function QuizPage() {
   };
 
   const restart = () => {
+    stopBgMusic();
     setSelectedSet(null);
     setFinished(false);
     setShuffled([]);
@@ -89,8 +101,8 @@ export default function QuizPage() {
     setFeedback(null);
   };
 
-  if (!selectedSet) return <SetSelector sets={sets} onSelect={startQuiz} />;
-  if (finished) return <ResultScreen score={score} total={shuffled.length} onRestart={restart} onRetry={() => startQuiz(selectedSet)} />;
+  if (!selectedSet) return <SetSelector sets={sets} onSelect={startQuiz} muted={muted} onToggleMute={toggleMute} />;
+  if (finished) return <ResultScreen score={score} total={shuffled.length} onRestart={restart} onRetry={() => startQuiz(selectedSet)} muted={muted} onToggleMute={toggleMute} />;
 
   const q = shuffled[index];
   const opts = [
@@ -108,7 +120,12 @@ export default function QuizPage() {
         <div className={`bg-gradient-to-r ${partColor} rounded-3xl p-4 mb-4 text-white shadow-lg`}>
           <div className="flex justify-between items-center">
             <span className="font-bold text-lg">{q.part}: {q.partTitle}</span>
-            <span className="bg-white/30 rounded-full px-3 py-1 font-bold">{index + 1} / {shuffled.length}</span>
+            <div className="flex items-center gap-2">
+              <button onClick={toggleMute} className="bg-white/20 hover:bg-white/40 rounded-full w-9 h-9 flex items-center justify-center text-xl transition-all" title={muted ? "Unmute" : "Mute"}>
+                {muted ? "🔇" : "🔊"}
+              </button>
+              <span className="bg-white/30 rounded-full px-3 py-1 font-bold">{index + 1} / {shuffled.length}</span>
+            </div>
           </div>
           <div className="mt-2 bg-white/30 rounded-full h-4 overflow-hidden">
             <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
@@ -166,7 +183,7 @@ export default function QuizPage() {
   );
 }
 
-function SetSelector({ sets, onSelect }: { sets: string[]; onSelect: (s: string) => void }) {
+function SetSelector({ sets, onSelect, muted, onToggleMute }: { sets: string[]; onSelect: (s: string) => void; muted: boolean; onToggleMute: () => void }) {
   const setConfig: Record<string, { emoji: string; color: string; desc: string }> = {
     "Basic Assessment": { emoji: "📚", color: "from-purple-400 to-indigo-500", desc: "English, Math, Logic & General Knowledge" },
     "Logic & IQ Practice": { emoji: "🧠", color: "from-orange-400 to-pink-500", desc: "Patterns, Odd One Out & Reasoning" },
@@ -174,6 +191,11 @@ function SetSelector({ sets, onSelect }: { sets: string[]; onSelect: (s: string)
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-yellow-100 to-pink-200 flex items-center justify-center p-4">
       <div className="w-full max-w-xl text-center">
+        <div className="flex justify-end mb-2">
+          <button onClick={onToggleMute} className="bg-white/60 hover:bg-white/90 rounded-full w-10 h-10 flex items-center justify-center text-xl shadow transition-all" title={muted ? "Unmute" : "Mute"}>
+            {muted ? "🔇" : "🔊"}
+          </button>
+        </div>
         <div className="text-7xl mb-4">🌟</div>
         <h1 className="text-4xl md:text-5xl font-extrabold text-purple-800 mb-2">Fun Quiz Time!</h1>
         <p className="text-xl text-purple-600 mb-8 font-semibold">Pick a quiz to start! 🎉</p>
@@ -198,13 +220,18 @@ function SetSelector({ sets, onSelect }: { sets: string[]; onSelect: (s: string)
   );
 }
 
-function ResultScreen({ score, total, onRestart, onRetry }: { score: number; total: number; onRestart: () => void; onRetry: () => void }) {
+function ResultScreen({ score, total, onRestart, onRetry, muted, onToggleMute }: { score: number; total: number; onRestart: () => void; onRetry: () => void; muted: boolean; onToggleMute: () => void }) {
   const pct = Math.round((score / total) * 100);
   const star = pct >= 80 ? "🏆" : pct >= 50 ? "🌟" : "💪";
   const msg = pct >= 80 ? "You're a superstar!" : pct >= 50 ? "Great effort!" : "Keep practising!";
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-yellow-100 to-pink-200 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-4 border-purple-200">
+        <div className="flex justify-end mb-2">
+          <button onClick={onToggleMute} className="bg-purple-100 hover:bg-purple-200 rounded-full w-10 h-10 flex items-center justify-center text-xl shadow transition-all" title={muted ? "Unmute" : "Mute"}>
+            {muted ? "🔇" : "🔊"}
+          </button>
+        </div>
         <div className="text-8xl mb-4">{star}</div>
         <h2 className="text-4xl font-extrabold text-purple-800 mb-2">{msg}</h2>
         <p className="text-xl text-purple-500 mb-6 font-semibold">You scored</p>
