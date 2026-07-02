@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import type { Question } from '../api/questions/route';
 import { useAudio } from '../hooks/useAudio';
@@ -246,6 +247,14 @@ export default function QuizPage() {
             ⭐ Score: {score} / {index + (feedback ? 1 : 0)}
           </div>
         </div>
+        <div className='flex justify-center mt-10'>
+          <Link
+            href='/contact'
+            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+          >
+            💌 Contact Us
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -323,6 +332,14 @@ function SetSelector({
         <p className='mt-8 text-purple-500 font-medium'>
           30 questions per quiz • Choose wisely! 🦄
         </p>
+        <div className='flex justify-center mt-10'>
+          <Link
+            href='/contact'
+            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+          >
+            💌 Contact Us
+          </Link>
+        </div>
       </div>
     </div>
   );
