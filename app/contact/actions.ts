@@ -1,5 +1,7 @@
 "use server";
 
+import { Resend } from "resend";
+
 export type ContactState = {
   status: "idle" | "success" | "error";
   message: string;
@@ -18,8 +20,36 @@ export async function submitContact(
     return { status: "error", message: "Please fill in all required fields." };
   }
 
-  // TODO: plug in your email/notification service here (e.g. Resend, SendGrid, Nodemailer)
-  console.log("📬 Contact form submission:", { name, email, category, message });
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM;
+  const to = process.env.CONTACT_TO;
+
+  if (!apiKey || !from || !to) {
+    console.error("Missing Resend env vars: RESEND_API_KEY, RESEND_FROM, CONTACT_TO");
+    return { status: "error", message: "Email service is not configured. Please try again later." };
+  }
+
+  const resend = new Resend(apiKey);
+
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    replyTo: email,
+    subject: `[${category}] Message from ${name}`,
+    html: `
+      <h2>New Contact Form Submission</h2>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+      <p><strong>Category:</strong> ${category}</p>
+      <hr />
+      <p>${message.replace(/\n/g, "<br/>")}</p>
+    `,
+  });
+
+  if (error) {
+    console.error("Resend error:", error);
+    return { status: "error", message: "Failed to send your message. Please try again." };
+  }
 
   return {
     status: "success",
