@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import UserProfile from './components/UserProfile';
 
 export default function Home() {
   return (
@@ -8,9 +9,10 @@ export default function Home() {
         <h1 className='text-5xl font-extrabold text-purple-800 mb-3'>
           Kids Quiz App
         </h1>
-        <p className='text-xl text-purple-600 font-semibold mb-8'>
+        <p className='text-xl text-purple-600 font-semibold mb-4'>
           Learn, play, and have fun! 🎉
         </p>
+        <UserProfile />
         <div className='flex flex-col gap-4 items-center'>
           <Link
             href='/quiz'
@@ -18,12 +20,20 @@ export default function Home() {
           >
             🚀 Start Quiz!
           </Link>
-          <Link
-            href='/contact'
-            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
-          >
-            💌 Contact Us
-          </Link>
+          <div className='flex gap-3'>
+            <Link
+              href='/profile'
+              className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+            >
+              👤 My Profile
+            </Link>
+            <Link
+              href='/contact'
+              className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+            >
+              💌 Contact Us
+            </Link>
+          </div>
         </div>
         <div className='mt-10 flex justify-center gap-6 text-4xl'>
           <span>📚</span>

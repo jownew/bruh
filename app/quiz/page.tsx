@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import type { Question } from '../api/questions/route';
 import { useAudio } from '../hooks/useAudio';
+import { useUserData } from '../hooks/useUserData';
 
 const EMOJIS_CORRECT = ['🎉', '⭐', '🌟', '🥳', '🎊', '🦄', '🍭'];
 const EMOJIS_WRONG = ['😅', '💪', '🌈', '🔄', '😊'];
@@ -48,6 +49,7 @@ export default function QuizPage() {
   const [feedbackEmoji, setFeedbackEmoji] = useState('');
   const { playCorrect, playWrong, playClick, playVictory, toggleMute, muted } =
     useAudio();
+  const { name: playerName, saveAttempt } = useUserData();
 
   useEffect(() => {
     fetch('/api/questions')
@@ -93,6 +95,7 @@ export default function QuizPage() {
     playClick();
     if (index + 1 >= shuffled.length) {
       playVictory();
+      saveAttempt(selectedSet!, score, shuffled.length);
       setFinished(true);
     } else {
       setIndex((i) => i + 1);
@@ -126,6 +129,7 @@ export default function QuizPage() {
       <ResultScreen
         score={score}
         total={shuffled.length}
+        playerName={playerName}
         onRestart={restart}
         onRetry={() => startQuiz(selectedSet)}
         muted={muted}
@@ -247,14 +251,6 @@ export default function QuizPage() {
             ⭐ Score: {score} / {index + (feedback ? 1 : 0)}
           </div>
         </div>
-        <div className='flex justify-center mt-10'>
-          <Link
-            href='/contact'
-            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
-          >
-            💌 Contact Us
-          </Link>
-        </div>
       </div>
     </div>
   );
@@ -329,10 +325,16 @@ function SetSelector({
             );
           })}
         </div>
-        <p className='mt-8 text-purple-500 font-medium'>
+        <p className='mt-8 text-purple-500 font-medium mb-5'>
           30 questions per quiz • Choose wisely! 🦄
         </p>
-        <div className='flex justify-center mt-10'>
+        <div className='flex gap-3 justify-center'>
+          <Link
+            href='/profile'
+            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+          >
+            👤 My Profile
+          </Link>
           <Link
             href='/contact'
             className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
@@ -348,6 +350,7 @@ function SetSelector({
 function ResultScreen({
   score,
   total,
+  playerName,
   onRestart,
   onRetry,
   muted,
@@ -355,6 +358,7 @@ function ResultScreen({
 }: {
   score: number;
   total: number;
+  playerName: string;
   onRestart: () => void;
   onRetry: () => void;
   muted: boolean;
@@ -362,12 +366,13 @@ function ResultScreen({
 }) {
   const pct = Math.round((score / total) * 100);
   const star = pct >= 80 ? '🏆' : pct >= 50 ? '🌟' : '💪';
-  const msg =
+  const base =
     pct >= 80
-      ? "You're a superstar!"
+      ? "You're a superstar"
       : pct >= 50
-        ? 'Great effort!'
-        : 'Keep practising!';
+        ? 'Great effort'
+        : 'Keep practising';
+  const msg = playerName ? `${base}, ${playerName}!` : `${base}!`;
   return (
     <div className='min-h-screen bg-gradient-to-br from-sky-200 via-yellow-100 to-pink-200 flex items-center justify-center p-4'>
       <div className='bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-4 border-purple-200'>
