@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useUserData, type QuizAttempt } from "../hooks/useUserData";
 
@@ -96,8 +97,15 @@ export default function UserProfile() {
             ))}
           </div>
 
+          {/* See all link */}
+          <div className="mt-3 text-center">
+            <Link href="/profile" className="text-sm font-bold text-purple-500 hover:text-purple-700 hover:underline transition-colors">
+              See full history →
+            </Link>
+          </div>
+
           {/* Clear data */}
-          <div className="mt-4 text-center">
+          <div className="mt-3 text-center">
             {confirmClear ? (
               <div className="flex gap-2 justify-center items-center flex-wrap">
                 <span className="text-sm font-bold text-red-600">Clear all saved data?</span>
