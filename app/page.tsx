@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import UserProfile from './components/UserProfile';
 
 export default function Home() {
   return (
@@ -8,9 +9,10 @@ export default function Home() {
         <h1 className='text-5xl font-extrabold text-purple-800 mb-3'>
           Kids Quiz App
         </h1>
-        <p className='text-xl text-purple-600 font-semibold mb-8'>
+        <p className='text-xl text-purple-600 font-semibold mb-4'>
           Learn, play, and have fun! 🎉
         </p>
+        <UserProfile />
         <div className='flex flex-col gap-4 items-center'>
           <Link
             href='/quiz'

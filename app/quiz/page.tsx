@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import type { Question } from '../api/questions/route';
 import { useAudio } from '../hooks/useAudio';
+import { useUserData } from '../hooks/useUserData';
 
 const EMOJIS_CORRECT = ['🎉', '⭐', '🌟', '🥳', '🎊', '🦄', '🍭'];
 const EMOJIS_WRONG = ['😅', '💪', '🌈', '🔄', '😊'];
@@ -48,6 +49,7 @@ export default function QuizPage() {
   const [feedbackEmoji, setFeedbackEmoji] = useState('');
   const { playCorrect, playWrong, playClick, playVictory, toggleMute, muted } =
     useAudio();
+  const { name: playerName, saveAttempt } = useUserData();
 
   useEffect(() => {
     fetch('/api/questions')
@@ -93,6 +95,7 @@ export default function QuizPage() {
     playClick();
     if (index + 1 >= shuffled.length) {
       playVictory();
+      saveAttempt(selectedSet!, score, shuffled.length);
       setFinished(true);
     } else {
       setIndex((i) => i + 1);
@@ -126,6 +129,7 @@ export default function QuizPage() {
       <ResultScreen
         score={score}
         total={shuffled.length}
+        playerName={playerName}
         onRestart={restart}
         onRetry={() => startQuiz(selectedSet)}
         muted={muted}
@@ -348,6 +352,7 @@ function SetSelector({
 function ResultScreen({
   score,
   total,
+  playerName,
   onRestart,
   onRetry,
   muted,
@@ -355,6 +360,7 @@ function ResultScreen({
 }: {
   score: number;
   total: number;
+  playerName: string;
   onRestart: () => void;
   onRetry: () => void;
   muted: boolean;
@@ -362,12 +368,9 @@ function ResultScreen({
 }) {
   const pct = Math.round((score / total) * 100);
   const star = pct >= 80 ? '🏆' : pct >= 50 ? '🌟' : '💪';
-  const msg =
-    pct >= 80
-      ? "You're a superstar!"
-      : pct >= 50
-        ? 'Great effort!'
-        : 'Keep practising!';
+  const base =
+    pct >= 80 ? "You're a superstar" : pct >= 50 ? 'Great effort' : 'Keep practising';
+  const msg = playerName ? `${base}, ${playerName}!` : `${base}!`;
   return (
     <div className='min-h-screen bg-gradient-to-br from-sky-200 via-yellow-100 to-pink-200 flex items-center justify-center p-4'>
       <div className='bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-4 border-purple-200'>
