@@ -251,14 +251,6 @@ export default function QuizPage() {
             ⭐ Score: {score} / {index + (feedback ? 1 : 0)}
           </div>
         </div>
-        <div className='flex justify-center mt-10'>
-          <Link
-            href='/contact'
-            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
-          >
-            💌 Contact Us
-          </Link>
-        </div>
       </div>
     </div>
   );
@@ -333,10 +325,16 @@ function SetSelector({
             );
           })}
         </div>
-        <p className='mt-8 text-purple-500 font-medium'>
+        <p className='mt-8 text-purple-500 font-medium mb-5'>
           30 questions per quiz • Choose wisely! 🦄
         </p>
-        <div className='flex justify-center mt-10'>
+        <div className='flex gap-3 justify-center'>
+          <Link
+            href='/profile'
+            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+          >
+            👤 My Profile
+          </Link>
           <Link
             href='/contact'
             className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
@@ -369,7 +367,11 @@ function ResultScreen({
   const pct = Math.round((score / total) * 100);
   const star = pct >= 80 ? '🏆' : pct >= 50 ? '🌟' : '💪';
   const base =
-    pct >= 80 ? "You're a superstar" : pct >= 50 ? 'Great effort' : 'Keep practising';
+    pct >= 80
+      ? "You're a superstar"
+      : pct >= 50
+        ? 'Great effort'
+        : 'Keep practising';
   const msg = playerName ? `${base}, ${playerName}!` : `${base}!`;
   return (
     <div className='min-h-screen bg-gradient-to-br from-sky-200 via-yellow-100 to-pink-200 flex items-center justify-center p-4'>
