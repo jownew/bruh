@@ -150,16 +150,21 @@ export default function QuizPage() {
     <div className='min-h-screen bg-gradient-to-br from-sky-200 via-yellow-100 to-pink-200 flex items-center justify-center p-4'>
       <div className='w-full max-w-2xl'>
         {/* Header */}
+        {/* Home button */}
+        <div className='mb-3'>
+          <Link
+            href='/'
+            className='inline-flex items-center gap-2 bg-white text-purple-700 font-extrabold text-sm px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+          >
+            🏠 Back to Home
+          </Link>
+        </div>
+
         <div
           className={`bg-gradient-to-r ${partColor} rounded-3xl p-4 mb-4 text-white shadow-lg`}
         >
           <div className='flex justify-between items-center'>
-            <div className='flex items-center gap-2'>
-              <Link href='/' className='bg-white/20 hover:bg-white/40 rounded-full w-9 h-9 flex items-center justify-center text-lg transition-all' title='Back to Home'>
-                🏠
-              </Link>
-              <span className='font-bold text-lg'>{q.part}: {q.partTitle}</span>
-            </div>
+            <span className='font-bold text-lg'>{q.part}: {q.partTitle}</span>
             <div className='flex items-center gap-2'>
               <button
                 onClick={toggleMute}
