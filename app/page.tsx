@@ -20,12 +20,18 @@ export default function Home() {
           >
             🚀 Start Quiz!
           </Link>
-          <div className='flex gap-3'>
+          <div className='flex gap-3 flex-wrap justify-center'>
             <Link
               href='/profile'
               className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
             >
               👤 My Profile
+            </Link>
+            <Link
+              href='/leaderboard'
+              className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+            >
+              🏆 Leaderboard
             </Link>
             <Link
               href='/contact'

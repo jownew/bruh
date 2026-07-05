@@ -96,6 +96,20 @@ export default function QuizPage() {
     if (index + 1 >= shuffled.length) {
       playVictory();
       saveAttempt(selectedSet!, score, shuffled.length);
+      if (playerName) {
+        fetch('/api/leaderboard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: playerName,
+            questionSet: selectedSet,
+            score,
+            total: shuffled.length,
+          }),
+        }).catch(() => {
+          /* leaderboard submission is best-effort */
+        });
+      }
       setFinished(true);
     } else {
       setIndex((i) => i + 1);
@@ -130,6 +144,7 @@ export default function QuizPage() {
         score={score}
         total={shuffled.length}
         playerName={playerName}
+        questionSet={selectedSet!}
         onRestart={restart}
         onRetry={() => startQuiz(selectedSet)}
         muted={muted}
@@ -336,12 +351,18 @@ function SetSelector({
         <p className='mt-8 text-purple-500 font-medium mb-5'>
           30 questions per quiz • Choose wisely! 🦄
         </p>
-        <div className='flex gap-3 justify-center'>
+        <div className='flex gap-3 justify-center flex-wrap'>
           <Link
             href='/profile'
             className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
           >
             👤 My Profile
+          </Link>
+          <Link
+            href='/leaderboard'
+            className='bg-white/70 hover:bg-white text-purple-700 font-bold text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all duration-200 border-2 border-purple-200'
+          >
+            🏆 Leaderboard
           </Link>
           <Link
             href='/contact'
@@ -359,6 +380,7 @@ function ResultScreen({
   score,
   total,
   playerName,
+  questionSet,
   onRestart,
   onRetry,
   muted,
@@ -367,6 +389,7 @@ function ResultScreen({
   score: number;
   total: number;
   playerName: string;
+  questionSet: string;
   onRestart: () => void;
   onRetry: () => void;
   muted: boolean;
@@ -414,6 +437,12 @@ function ResultScreen({
           >
             🏠 Choose Another Quiz
           </button>
+          <Link
+            href={`/leaderboard?questionSet=${encodeURIComponent(questionSet)}`}
+            className='block w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-950 font-extrabold text-xl py-4 rounded-full shadow-lg transition-all hover:scale-105'
+          >
+            🏆 See Leaderboard
+          </Link>
         </div>
       </div>
     </div>
