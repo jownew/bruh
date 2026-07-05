@@ -78,10 +78,11 @@ export default function LeaderboardView() {
             Leaderboard
           </h1>
           <p className='text-purple-600 font-semibold'>
-            Top scores from players everywhere!
+            This week&apos;s top scores!
           </p>
           <p className='text-purple-400 text-xs mt-1'>
-            Ranked by score, fastest time breaks ties ⚡
+            Ranked by score, fastest time breaks ties ⚡ · resets every Monday
+            12am (UTC+8) 🔄
           </p>
         </div>
 

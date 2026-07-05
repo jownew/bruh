@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/app/lib/db";
+import { currentLeaderboardWeekStart } from "@/app/lib/leaderboardWindow";
 
 export interface LeaderboardEntry {
   id: number;
@@ -30,10 +31,12 @@ export async function GET(request: Request) {
     );
   }
 
+  const weekStart = currentLeaderboardWeekStart().toISOString();
+
   const rows = await sql`
     SELECT id, name, question_set, score, total, elapsed_seconds, created_at
     FROM leaderboard_entries
-    WHERE question_set = ${questionSet}
+    WHERE question_set = ${questionSet} AND created_at >= ${weekStart}
     ORDER BY score DESC, elapsed_seconds ASC NULLS LAST, total ASC, created_at ASC
     LIMIT ${limit}
   `;
