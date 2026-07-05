@@ -1,1 +1,38 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 @AGENTS.md
+
+## Important: non-standard Next.js version
+
+This repo pins `next@16.2.9`, a version ahead of this model's training data — App Router APIs, conventions, and file structure may differ from what you expect. Per `AGENTS.md`, consult `node_modules/next/dist/docs/` (after `npm install`) before writing framework-touching code, and pay attention to deprecation notices.
+
+## Commands
+
+- `npm run dev` — start the dev server (Turbopack, per Next 16 default)
+- `npm run build` — production build
+- `npm run start` — serve the production build
+- `npm run lint` — ESLint via `eslint.config.mjs` (flat config, extends `eslint-config-next` core-web-vitals + typescript)
+
+There is no test runner configured in this project.
+
+## Environment
+
+Copy `.env.example` to `.env.local`. Required vars for the contact form to send email (via Resend):
+- `RESEND_API_KEY`
+- `RESEND_FROM`
+- `CONTACT_TO`
+
+If unset, `submitContact` (`app/contact/actions.ts`) fails gracefully with a user-facing error rather than throwing.
+
+## Architecture
+
+This is a single-purpose kids' quiz app (App Router, all client components except the contact server action).
+
+- **Question data lives in a CSV, not a database.** `data/structured_question_bank.csv` is the source of truth for all quiz content. `app/api/questions/route.ts` reads and hand-parses this file (custom `parseCSVLine`, no library) on every request, groups rows by `QuestionSet`, and serves `{ questions, sets }` as JSON. `GET /api/questions?questionSet=X` filters to one set. The `Question` interface exported from this route file is imported directly by `app/quiz/page.tsx` as the shared type — there's no separate types module.
+- **User identity and history are entirely client-side.** `app/hooks/useUserData.ts` persists `{ name, history }` to `localStorage` under key `bruh_user_data` (capped at 50 attempts). There is no backend user store or auth. Both `app/components/UserProfile.tsx` (home page widget) and `app/profile/page.tsx` (full history page) read from this same hook independently — keep them in sync manually if the data shape changes. Components using this hook render `null` until `loaded` is true to avoid SSR/localStorage hydration mismatches.
+- **Sound effects are synthesized, not sampled.** `app/hooks/useAudio.ts` builds tones/melodies at runtime via the Web Audio API (`OscillatorNode`/`GainNode`) — there are no audio asset files. Background music is a self-rescheduling `setTimeout` loop; mute state is tracked in both a ref (for the audio callbacks) and React state (for UI).
+- **Quiz flow is one large stateful component.** `app/quiz/page.tsx` fetches sets, then questions for the chosen set, shuffles them client-side, and drives selection → answer → feedback → next through local `useState`, saving the final attempt via `useUserData().saveAttempt` on completion. `SetSelector` and `ResultScreen` are defined in the same file rather than split out.
+- **Styling is Tailwind v4** via `@tailwindcss/postcss` (no `tailwind.config.*` — v4 uses CSS-based config in `app/globals.css`). UI is heavily gradient/emoji-driven; color mappings per quiz part live in `PART_COLORS`/`OPTION_COLORS` constants in `quiz/page.tsx`.
+- Path alias `@/*` maps to the repo root (`tsconfig.json`).
