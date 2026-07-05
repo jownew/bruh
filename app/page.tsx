@@ -48,6 +48,14 @@ export default function Home() {
           <span>🏆</span>
           <span>🎊</span>
         </div>
+        <div className='mt-6'>
+          <Link
+            href='/changelog'
+            className='text-purple-500 font-bold text-sm hover:underline'
+          >
+            📝 What&apos;s New
+          </Link>
+        </div>
       </div>
     </div>
   );

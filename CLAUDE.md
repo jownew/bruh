@@ -8,6 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repo pins `next@16.2.9`, a version ahead of this model's training data — App Router APIs, conventions, and file structure may differ from what you expect. Per `AGENTS.md`, consult `node_modules/next/dist/docs/` (after `npm install`) before writing framework-touching code, and pay attention to deprecation notices.
 
+## Keep the changelog updated
+
+`app/changelog/page.tsx` is a hand-written changelog shown to players/parents at `/changelog`. **Whenever you implement a notable user-facing change** (new feature, visible behavior change, meaningful fix), add an entry to the top of its `ENTRIES` array (newest first, use today's date). Write each entry the way you'd explain it to a non-developer: plain language, one short sentence, no jargon (no "API", "backend", "refactor", "endpoint", "component") — match the tone of existing entries. Skip purely internal changes (dependency bumps, docs, config, refactors with no visible effect, lint fixes).
+
 ## Commands
 
 - `npm run dev` — start the dev server (Turbopack, per Next 16 default)
