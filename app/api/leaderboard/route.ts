@@ -7,6 +7,7 @@ export interface LeaderboardEntry {
   questionSet: string;
   score: number;
   total: number;
+  elapsedSeconds: number | null;
   createdAt: string;
 }
 
@@ -30,10 +31,10 @@ export async function GET(request: Request) {
   }
 
   const rows = await sql`
-    SELECT id, name, question_set, score, total, created_at
+    SELECT id, name, question_set, score, total, elapsed_seconds, created_at
     FROM leaderboard_entries
     WHERE question_set = ${questionSet}
-    ORDER BY score DESC, total ASC, created_at ASC
+    ORDER BY score DESC, elapsed_seconds ASC NULLS LAST, total ASC, created_at ASC
     LIMIT ${limit}
   `;
 
@@ -43,6 +44,7 @@ export async function GET(request: Request) {
     questionSet: r.question_set,
     score: r.score,
     total: r.total,
+    elapsedSeconds: r.elapsed_seconds,
     createdAt: r.created_at,
   }));
 
@@ -56,6 +58,10 @@ export async function POST(request: Request) {
     typeof body?.questionSet === "string" ? body.questionSet.trim() : "";
   const score = Number(body?.score);
   const total = Number(body?.total);
+  const elapsedSeconds =
+    body?.elapsedSeconds === undefined || body?.elapsedSeconds === null
+      ? null
+      : Number(body.elapsedSeconds);
 
   if (!name || name.length > MAX_NAME_LENGTH) {
     return NextResponse.json(
@@ -81,11 +87,17 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+  if (elapsedSeconds !== null && (!Number.isInteger(elapsedSeconds) || elapsedSeconds < 0)) {
+    return NextResponse.json(
+      { error: "elapsedSeconds must be a non-negative integer" },
+      { status: 400 },
+    );
+  }
 
   const [row] = await sql`
-    INSERT INTO leaderboard_entries (name, question_set, score, total)
-    VALUES (${name}, ${questionSet}, ${score}, ${total})
-    RETURNING id, name, question_set, score, total, created_at
+    INSERT INTO leaderboard_entries (name, question_set, score, total, elapsed_seconds)
+    VALUES (${name}, ${questionSet}, ${score}, ${total}, ${elapsedSeconds})
+    RETURNING id, name, question_set, score, total, elapsed_seconds, created_at
   `;
 
   const entry: LeaderboardEntry = {
@@ -94,6 +106,7 @@ export async function POST(request: Request) {
     questionSet: row.question_set,
     score: row.score,
     total: row.total,
+    elapsedSeconds: row.elapsed_seconds,
     createdAt: row.created_at,
   };
 

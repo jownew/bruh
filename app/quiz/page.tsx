@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Question } from '../api/questions/route';
 import { useAudio } from '../hooks/useAudio';
 import { useUserData } from '../hooks/useUserData';
@@ -50,6 +50,7 @@ export default function QuizPage() {
   const { playCorrect, playWrong, playClick, playVictory, toggleMute, muted } =
     useAudio();
   const { name: playerName, saveAttempt } = useUserData();
+  const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     fetch('/api/questions')
@@ -69,6 +70,7 @@ export default function QuizPage() {
         setChosen(null);
         setFeedback(null);
         setFinished(false);
+        startTimeRef.current = Date.now();
       });
   }, []);
 
@@ -97,6 +99,9 @@ export default function QuizPage() {
       playVictory();
       saveAttempt(selectedSet!, score, shuffled.length);
       if (playerName) {
+        const elapsedSeconds = startTimeRef.current
+          ? Math.round((Date.now() - startTimeRef.current) / 1000)
+          : null;
         fetch('/api/leaderboard', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -105,6 +110,7 @@ export default function QuizPage() {
             questionSet: selectedSet,
             score,
             total: shuffled.length,
+            elapsedSeconds,
           }),
         }).catch(() => {
           /* leaderboard submission is best-effort */

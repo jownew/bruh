@@ -16,6 +16,13 @@ function rankBadge(i: number) {
   return i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
 }
 
+function formatElapsed(seconds: number | null) {
+  if (seconds === null) return '—';
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
 export default function LeaderboardView() {
   const searchParams = useSearchParams();
   const [sets, setSets] = useState<string[]>([]);
@@ -73,6 +80,9 @@ export default function LeaderboardView() {
           <p className='text-purple-600 font-semibold'>
             Top scores from players everywhere!
           </p>
+          <p className='text-purple-400 text-xs mt-1'>
+            Ranked by score, fastest time breaks ties ⚡
+          </p>
         </div>
 
         {sets.length > 1 && (
@@ -124,6 +134,9 @@ export default function LeaderboardView() {
                     </span>
                     <span className='font-extrabold text-purple-700 shrink-0 w-12 text-right'>
                       {pct}%
+                    </span>
+                    <span className='text-purple-500 text-xs font-bold shrink-0 w-12 text-right'>
+                      ⏱ {formatElapsed(entry.elapsedSeconds)}
                     </span>
                     <span className='text-purple-300 text-xs shrink-0 w-14 text-right'>
                       {formatDate(entry.createdAt)}
