@@ -11,6 +11,13 @@ interface ChangelogEntry {
 // players and parents, not developers.
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: 'July 7, 2026',
+    emoji: '📚',
+    title: 'Lots of new questions',
+    description:
+      'Added over 170 new questions to the Basic Assessment quiz, covering English, Math, Logic, and General Knowledge — more variety every time you play!',
+  },
+  {
     date: 'July 6, 2026',
     emoji: '🛡️',
     title: 'Friendlier names only',
