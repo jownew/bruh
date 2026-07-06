@@ -452,6 +452,9 @@ function ResultScreen({
         </div>
         <div className='text-8xl mb-4'>{star}</div>
         <h2 className='text-4xl font-extrabold text-purple-800 mb-2'>{msg}</h2>
+        <p className='inline-block bg-purple-100 text-purple-700 font-bold text-sm px-4 py-1 rounded-full mb-4'>
+          {questionSet}
+        </p>
         <p className='text-xl text-purple-500 mb-6 font-semibold'>You scored</p>
         <div className='bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-2xl p-6 mb-6'>
           <span className='text-6xl font-extrabold'>{score}</span>

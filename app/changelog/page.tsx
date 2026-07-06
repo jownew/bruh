@@ -12,6 +12,13 @@ interface ChangelogEntry {
 const ENTRIES: ChangelogEntry[] = [
   {
     date: 'July 6, 2026',
+    emoji: '🏷️',
+    title: 'Which quiz was that?',
+    description:
+      "Your results screen now shows the name of the quiz you just finished, so it's easy to tell your scores apart.",
+  },
+  {
+    date: 'July 6, 2026',
     emoji: '🐼',
     title: 'A fun name to start',
     description:
