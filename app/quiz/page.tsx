@@ -417,6 +417,28 @@ function ResultScreen({
         ? 'Great effort'
         : 'Keep practising';
   const msg = playerName ? `${base}, ${playerName}!` : `${base}!`;
+  const [shareStatus, setShareStatus] = useState<'idle' | 'copied'>('idle');
+
+  const handleShare = async () => {
+    const text = `I scored ${score}/${total} (${pct}%) on the "${questionSet}" quiz! ${star}`;
+    const url = `${window.location.origin}/quiz`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ text, url });
+      } catch {
+        /* user cancelled the native share sheet */
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      setShareStatus('copied');
+      setTimeout(() => setShareStatus('idle'), 2000);
+    } catch {
+      /* clipboard unavailable */
+    }
+  };
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-sky-200 via-yellow-100 to-pink-200 flex items-center justify-center p-4'>
       <div className='bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-4 border-purple-200'>
@@ -456,6 +478,12 @@ function ResultScreen({
           >
             🏆 See Leaderboard
           </Link>
+          <button
+            onClick={handleShare}
+            className='w-full bg-green-400 hover:bg-green-500 text-green-950 font-extrabold text-xl py-4 rounded-full shadow-lg transition-all hover:scale-105'
+          >
+            {shareStatus === 'copied' ? '✅ Copied!' : '📤 Share My Score'}
+          </button>
         </div>
       </div>
     </div>
