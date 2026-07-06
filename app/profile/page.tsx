@@ -72,10 +72,12 @@ export default function ProfilePage() {
               {name && <button type="button" onClick={() => setEditing(false)} className="text-purple-400 hover:underline text-sm self-center">Cancel</button>}
             </form>
           ) : (
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2 flex-wrap">
               <h1 className="text-3xl font-extrabold text-purple-800">{name}</h1>
-              <button onClick={() => { setEditing(true); setInput(name); }}
-                className="text-purple-300 hover:text-purple-500 text-lg">✏️</button>
+              <button onClick={() => { setEditing(true); setInput(name); }} title="Edit name"
+                className="flex items-center gap-1 bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold text-sm px-3 py-1.5 rounded-full shadow-sm hover:scale-105 transition-all">
+                ✏️ Edit
+              </button>
             </div>
           )}
         </div>

@@ -59,10 +59,12 @@ export default function UserProfile() {
           )}
         </form>
       ) : (
-        <div className="flex items-center justify-center gap-2 mb-4">
+        <div className="flex items-center justify-center gap-2 mb-4 flex-wrap">
           <p className="text-2xl font-extrabold text-purple-700">Hi, {name}! 👋</p>
           <button onClick={() => { setEditing(true); setInput(name); }} title="Edit name"
-            className="text-purple-300 hover:text-purple-500 transition-colors text-lg">✏️</button>
+            className="flex items-center gap-1 bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold text-sm px-3 py-1.5 rounded-full shadow-sm hover:scale-105 transition-all">
+            ✏️ Edit
+          </button>
         </div>
       )}
 
