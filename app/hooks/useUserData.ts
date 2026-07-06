@@ -1,4 +1,5 @@
 import { useCallback, useSyncExternalStore } from "react";
+import { generateKidSafeName } from "../lib/kidSafeName";
 
 export interface QuizAttempt {
   id: string;
@@ -19,7 +20,13 @@ const DEFAULT: StoredData = { name: "", history: [] };
 function loadFromStorage(): StoredData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as StoredData) : DEFAULT;
+    const data: StoredData = raw ? (JSON.parse(raw) as StoredData) : DEFAULT;
+    if (!data.name) {
+      const withName: StoredData = { ...data, name: generateKidSafeName() };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(withName));
+      return withName;
+    }
+    return data;
   } catch {
     return DEFAULT;
   }

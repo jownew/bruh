@@ -12,6 +12,13 @@ interface ChangelogEntry {
 const ENTRIES: ChangelogEntry[] = [
   {
     date: 'July 6, 2026',
+    emoji: '🐼',
+    title: 'A fun name to start',
+    description:
+      "New players now get a fun random name (like \"SparklyPanda42\") right away, so you can jump straight into playing. You can still change it anytime from your Profile page.",
+  },
+  {
+    date: 'July 6, 2026',
     emoji: '🔄',
     title: 'Fresh weekly leaderboard',
     description:
