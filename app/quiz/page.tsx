@@ -185,7 +185,9 @@ export default function QuizPage() {
           className={`bg-gradient-to-r ${partColor} rounded-3xl p-4 mb-4 text-white shadow-lg`}
         >
           <div className='flex justify-between items-center'>
-            <span className='font-bold text-lg'>{q.part}: {q.partTitle}</span>
+            <span className='font-bold text-lg'>
+              {q.part}: {q.partTitle}
+            </span>
             <div className='flex items-center gap-2'>
               <button
                 onClick={toggleMute}
@@ -309,6 +311,11 @@ function SetSelector({
       emoji: '🧠',
       color: 'from-orange-400 to-pink-500',
       desc: 'Patterns, Odd One Out & Reasoning',
+    },
+    'Grade 2 Practice Exam': {
+      emoji: '🐬',
+      color: 'from-yellow-400 to-green-500',
+      desc: 'English, Math, Science & Logic',
     },
   };
   return (
