@@ -36,6 +36,10 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
+function randomEmoji(emojis: string[]): string {
+  return emojis[Math.floor(Math.random() * emojis.length)];
+}
+
 export default function QuizPage() {
   const [sets, setSets] = useState<string[]>([]);
   const [selectedSet, setSelectedSet] = useState<string | null>(null);
@@ -81,9 +85,7 @@ export default function QuizPage() {
     const isCorrect = opt === q.correctOption;
     setFeedback(isCorrect ? 'correct' : 'wrong');
     setFeedbackEmoji(
-      isCorrect
-        ? EMOJIS_CORRECT[Math.floor(Math.random() * EMOJIS_CORRECT.length)]
-        : EMOJIS_WRONG[Math.floor(Math.random() * EMOJIS_WRONG.length)],
+      isCorrect ? randomEmoji(EMOJIS_CORRECT) : randomEmoji(EMOJIS_WRONG),
     );
     if (isCorrect) {
       setScore((s) => s + 1);
