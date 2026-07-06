@@ -43,7 +43,6 @@ function randomEmoji(emojis: string[]): string {
 export default function QuizPage() {
   const [sets, setSets] = useState<string[]>([]);
   const [selectedSet, setSelectedSet] = useState<string | null>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
   const [shuffled, setShuffled] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
   const [chosen, setChosen] = useState<string | null>(null);
@@ -66,7 +65,6 @@ export default function QuizPage() {
     fetch(`/api/questions?questionSet=${encodeURIComponent(set)}`)
       .then((r) => r.json())
       .then((d) => {
-        setQuestions(d.questions);
         setShuffled(shuffle(d.questions));
         setSelectedSet(set);
         setIndex(0);
@@ -130,7 +128,6 @@ export default function QuizPage() {
     setSelectedSet(null);
     setFinished(false);
     setShuffled([]);
-    setQuestions([]);
     setIndex(0);
     setScore(0);
     setChosen(null);

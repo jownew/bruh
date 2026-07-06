@@ -31,7 +31,7 @@ export default function ContactPage() {
         <div className="text-center mb-6">
           <div className="text-6xl mb-2">💌</div>
           <h1 className="text-4xl font-extrabold text-purple-800 mb-1">Contact Us</h1>
-          <p className="text-purple-600 font-semibold">Got feedback or questions? We'd love to hear from you!</p>
+          <p className="text-purple-600 font-semibold">Got feedback or questions? We&apos;d love to hear from you!</p>
         </div>
 
         {/* Form Card */}
