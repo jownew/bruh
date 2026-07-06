@@ -39,6 +39,33 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
+function shuffleOptions(q: Question): Question {
+  const letters = ['A', 'B', 'C'] as const;
+  const options = letters
+    .map((letter) => ({ letter, text: q[`option${letter}` as const] }))
+    .filter((opt) => opt.text !== '');
+
+  const shuffled = shuffle(options);
+  const newOptions: Record<'A' | 'B' | 'C', string> = { A: '', B: '', C: '' };
+  let correctOption = q.correctOption;
+
+  shuffled.forEach((opt, i) => {
+    const letter = letters[i];
+    newOptions[letter] = opt.text;
+    if (opt.letter === q.correctOption) {
+      correctOption = letter;
+    }
+  });
+
+  return {
+    ...q,
+    optionA: newOptions.A,
+    optionB: newOptions.B,
+    optionC: newOptions.C,
+    correctOption,
+  };
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const questionSet = searchParams.get('questionSet');
@@ -54,7 +81,7 @@ export async function GET(request: Request) {
 
   const questions: Question[] = dataLines.map((line) => {
     const cols = parseCSVLine(line);
-    return {
+    return shuffleOptions({
       questionSet: cols[0] ?? '',
       part: cols[1] ?? '',
       partTitle: cols[2] ?? '',
@@ -66,7 +93,7 @@ export async function GET(request: Request) {
       optionC: cols[8] ?? '',
       correctOption: cols[9] ?? '',
       correctAnswer: cols[10] ?? '',
-    };
+    });
   });
 
   const filtered = questionSet
