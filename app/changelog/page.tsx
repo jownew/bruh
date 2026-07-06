@@ -12,6 +12,13 @@ interface ChangelogEntry {
 const ENTRIES: ChangelogEntry[] = [
   {
     date: 'July 6, 2026',
+    emoji: '🛡️',
+    title: 'Friendlier names only',
+    description:
+      "We now check names for bad words. If you try to save one, we'll ask you to pick something friendlier instead.",
+  },
+  {
+    date: 'July 6, 2026',
     emoji: '✏️',
     title: 'Easier to rename yourself',
     description:

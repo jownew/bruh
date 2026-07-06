@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/app/lib/db";
 import { currentLeaderboardWeekStart } from "@/app/lib/leaderboardWindow";
+import { containsProfanity } from "@/app/lib/profanityFilter";
 
 export interface LeaderboardEntry {
   id: number;
@@ -69,6 +70,12 @@ export async function POST(request: Request) {
   if (!name || name.length > MAX_NAME_LENGTH) {
     return NextResponse.json(
       { error: `name is required (max ${MAX_NAME_LENGTH} chars)` },
+      { status: 400 },
+    );
+  }
+  if (containsProfanity(name)) {
+    return NextResponse.json(
+      { error: "Please choose a different name." },
       { status: 400 },
     );
   }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useUserData, type QuizAttempt } from "../hooks/useUserData";
+import { checkNameForProfanity } from "../lib/profanityActions";
 
 function pct(a: QuizAttempt) { return Math.round((a.score / a.total) * 100); }
 function scoreColor(v: number) { return v >= 80 ? "text-green-600" : v >= 50 ? "text-yellow-600" : "text-red-500"; }
@@ -15,12 +16,22 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [input, setInput] = useState("");
   const [confirmClear, setConfirmClear] = useState(false);
+  const [nameError, setNameError] = useState("");
 
   if (!loaded) return null;
 
-  const submitName = (e: React.FormEvent) => {
+  const submitName = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.trim()) { setName(input.trim()); setInput(""); setEditing(false); }
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    if (await checkNameForProfanity(trimmed)) {
+      setNameError("Please choose a friendlier name 😊");
+      return;
+    }
+    setName(trimmed);
+    setInput("");
+    setNameError("");
+    setEditing(false);
   };
 
   const totalQuizzes = history.length;
@@ -64,13 +75,18 @@ export default function ProfilePage() {
         <div className="text-center mb-6">
           <div className="text-6xl mb-3">👤</div>
           {!name || editing ? (
-            <form onSubmit={submitName} className="flex gap-2 justify-center flex-wrap">
-              <input autoFocus value={input} onChange={(e) => setInput(e.target.value)}
-                placeholder="Your name" maxLength={30}
-                className="border-2 border-purple-300 rounded-full px-4 py-2 text-purple-800 font-bold focus:outline-none focus:border-purple-500 bg-white/80" />
-              <button type="submit" className="bg-purple-500 hover:bg-purple-600 text-white font-bold px-4 py-2 rounded-full">Save 🌟</button>
-              {name && <button type="button" onClick={() => setEditing(false)} className="text-purple-400 hover:underline text-sm self-center">Cancel</button>}
-            </form>
+            <div>
+              <form onSubmit={submitName} className="flex gap-2 justify-center flex-wrap">
+                <input autoFocus value={input} onChange={(e) => { setInput(e.target.value); setNameError(""); }}
+                  placeholder="Your name" maxLength={30}
+                  className="border-2 border-purple-300 rounded-full px-4 py-2 text-purple-800 font-bold focus:outline-none focus:border-purple-500 bg-white/80" />
+                <button type="submit" className="bg-purple-500 hover:bg-purple-600 text-white font-bold px-4 py-2 rounded-full">Save 🌟</button>
+                {name && <button type="button" onClick={() => { setEditing(false); setNameError(""); }} className="text-purple-400 hover:underline text-sm self-center">Cancel</button>}
+              </form>
+              {nameError && (
+                <p className="text-red-500 font-bold text-sm mt-2">{nameError}</p>
+              )}
+            </div>
           ) : (
             <div className="flex items-center justify-center gap-2 flex-wrap">
               <h1 className="text-3xl font-extrabold text-purple-800">{name}</h1>
