@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import { NextResponse } from 'next/server';
+import path from 'path';
 
 export interface Question {
   questionSet: string;
@@ -18,15 +18,15 @@ export interface Question {
 
 function parseCSVLine(line: string): string[] {
   const result: string[] = [];
-  let current = "";
+  let current = '';
   let inQuotes = false;
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (ch === '"') {
       inQuotes = !inQuotes;
-    } else if (ch === "," && !inQuotes) {
+    } else if (ch === ',' && !inQuotes) {
       result.push(current);
-      current = "";
+      current = '';
     } else {
       current += ch;
     }
@@ -35,29 +35,37 @@ function parseCSVLine(line: string): string[] {
   return result;
 }
 
+function shuffle<T>(arr: T[]): T[] {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const questionSet = searchParams.get("questionSet");
+  const questionSet = searchParams.get('questionSet');
 
-  const csvPath = path.join(process.cwd(), "data", "structured_question_bank.csv");
-  const raw = fs.readFileSync(csvPath, "utf-8");
-  const lines = raw.split("\n").filter((l) => l.trim());
+  const csvPath = path.join(
+    process.cwd(),
+    'data',
+    'structured_question_bank.csv',
+  );
+  const raw = fs.readFileSync(csvPath, 'utf-8');
+  const lines = raw.split('\n').filter((l) => l.trim());
   const [, ...dataLines] = lines;
 
   const questions: Question[] = dataLines.map((line) => {
     const cols = parseCSVLine(line);
     return {
-      questionSet: cols[0] ?? "",
-      part: cols[1] ?? "",
-      partTitle: cols[2] ?? "",
-      sectionPoints: parseInt(cols[3] ?? "0", 10),
-      questionNumber: parseInt(cols[4] ?? "0", 10),
-      questionText: cols[5] ?? "",
-      optionA: cols[6] ?? "",
-      optionB: cols[7] ?? "",
-      optionC: cols[8] ?? "",
-      correctOption: cols[9] ?? "",
-      correctAnswer: cols[10] ?? "",
+      questionSet: cols[0] ?? '',
+      part: cols[1] ?? '',
+      partTitle: cols[2] ?? '',
+      sectionPoints: parseInt(cols[3] ?? '0', 10),
+      questionNumber: parseInt(cols[4] ?? '0', 10),
+      questionText: cols[5] ?? '',
+      optionA: cols[6] ?? '',
+      optionB: cols[7] ?? '',
+      optionC: cols[8] ?? '',
+      correctOption: cols[9] ?? '',
+      correctAnswer: cols[10] ?? '',
     };
   });
 
@@ -67,5 +75,8 @@ export async function GET(request: Request) {
 
   const sets = [...new Set(questions.map((q) => q.questionSet))];
 
-  return NextResponse.json({ questions: filtered, sets });
+  return NextResponse.json({
+    questions: shuffle(filtered).slice(0, 30),
+    sets,
+  });
 }
