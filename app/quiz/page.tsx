@@ -301,19 +301,14 @@ function SetSelector({
     string,
     { emoji: string; color: string; desc: string }
   > = {
-    'Basic Assessment': {
+    'Grade 1 Practice Exam': {
       emoji: '📚',
       color: 'from-purple-400 to-indigo-500',
-      desc: 'English, Math, Logic & General Knowledge',
-    },
-    'Logic & IQ Practice': {
-      emoji: '🧠',
-      color: 'from-orange-400 to-pink-500',
-      desc: 'Patterns, Odd One Out & Reasoning',
+      desc: 'English, Math, Logic, Patterns & General Knowledge',
     },
     'Grade 2 Practice Exam': {
-      emoji: '🐬',
-      color: 'from-yellow-400 to-green-500',
+      emoji: '🧠',
+      color: 'from-yellow-300 to-green-500',
       desc: 'English, Math, Science & Logic',
     },
   };
