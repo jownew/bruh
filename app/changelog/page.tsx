@@ -11,6 +11,13 @@ interface ChangelogEntry {
 // players and parents, not developers.
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: 'July 8, 2026',
+    emoji: '🏆',
+    title: 'Old scores stay on the leaderboard',
+    description:
+      "If a quiz gets renamed or retired, its leaderboard still shows up for the rest of the week if someone played it before the change — so nobody's win disappears.",
+  },
+  {
     date: 'July 7, 2026',
     emoji: '📚',
     title: 'Lots of new questions',

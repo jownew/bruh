@@ -33,12 +33,18 @@ export default function LeaderboardView() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/questions')
-      .then((r) => r.json())
-      .then((d: { sets: string[] }) => {
-        setSets(d.sets);
-        setSelectedSet((current) => current ?? d.sets[0] ?? null);
-      });
+    Promise.all([
+      fetch('/api/questions').then((r) => r.json()) as Promise<{ sets: string[] }>,
+      fetch('/api/leaderboard/sets').then((r) => r.json()) as Promise<{ sets: string[] }>,
+    ]).then(([active, historical]) => {
+      const activeSets = active.sets ?? [];
+      const retiredSets = (historical.sets ?? []).filter(
+        (set) => !activeSets.includes(set),
+      );
+      const allSets = [...activeSets, ...retiredSets];
+      setSets(allSets);
+      setSelectedSet((current) => current ?? allSets[0] ?? null);
+    });
   }, []);
 
   const loadEntries = useCallback((set: string) => {
